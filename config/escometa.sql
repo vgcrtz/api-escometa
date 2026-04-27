@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS escometa;
+USE escometa;
+
+DROP TABLE IF EXISTS Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion;
 
 #Parte correspondiente al usuario
 CREATE TABLE Usuario (
