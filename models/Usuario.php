@@ -17,6 +17,7 @@ class Usuario {
     }
 
     public function create($correo, $nombre, $nombre_usuario, $passwordHash, $tipo_usuario) {
+
         $query = "INSERT INTO " . $this->table . " (correo, nombre, nombre_usuario, contraseña, tipo_usuario)
                   VALUES (:correo, :nombre, :nombre_usuario, :password, :tipo_usuario)";
 
