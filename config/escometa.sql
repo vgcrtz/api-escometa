@@ -8,7 +8,8 @@ CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     correo VARCHAR(100) UNIQUE NOT NULL,
     contraseña VARCHAR(255) NOT NULL,
-    tipo_usuario ENUM('ALUMNO','DOCENTE','ADMINISTRATIVO') NOT NULL,
+    tipo_usuario ENUM('ALUMNO','DOCENTE','ADMINISTRATIVO', 'ADMIN') NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
     verificado BOOLEAN DEFAULT FALSE,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -34,6 +35,15 @@ CREATE TABLE Administrativo (
     id_usuario INT PRIMARY KEY,
     area VARCHAR(100),
     puesto VARCHAR(100),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+CREATE TABLE VerificacionCorreo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    codigo VARCHAR(10) NOT NULL,
+    expiracion DATETIME NOT NULL,
+    usado BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
