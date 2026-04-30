@@ -33,7 +33,7 @@ class UsuarioController {
     public function store($data) {
         AuthMiddleware::requireAdmin();
 
-        if (!isset($data['correo'], $data['contraseña'], $data['tipo_usuario'])) {
+        if (!isset($data['correo'], $data['nombre'], $data['nombre_usuario'], $data['contraseña'], $data['tipo_usuario'])) {
             Response::error("Datos incompletos");
         }
 
@@ -41,6 +41,8 @@ class UsuarioController {
 
         $id = $this->usuario->createWithRole([
             "correo" => $data['correo'],
+            "nombre" => $data['nombre'],
+            "nombre_usuario" => $data['nombre_usuario'],
             "password" => $passwordHash,
             "tipo_usuario" => $data['tipo_usuario'],
             "extra" => $data

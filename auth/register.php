@@ -21,6 +21,8 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 if (
     !isset($data['correo']) ||
+    !isset($data['nombre']) ||
+    !isset($data['nombre_usuario']) ||
     !isset($data['contraseña']) ||
     !isset($data['tipo_usuario'])
 ) {
@@ -30,6 +32,8 @@ if (
 }
 
 $correo = $data['correo'];
+$nombre = $data['nombre'];
+$nombre_usuario = $data['nombre_usuario'];
 $password = $data['contraseña'];
 $tipo = $data['tipo_usuario'];
 
@@ -70,7 +74,7 @@ try {
 
     $conn->beginTransaction();
 
-    $id_usuario = $usuarioModel->create($correo, $passwordHash, $tipo);
+    $id_usuario = $usuarioModel->create($correo, $nombre, $nombre_usuario, $passwordHash, $tipo);
 
     if (!$id_usuario) {
         throw new Exception("Error al crear usuario");
@@ -110,6 +114,8 @@ try {
 
     $session_data = [
         "id_usuario" => $id_usuario,
+        "nombre" => $nombre,
+        "nombre_usuario" => $nombre_usuario,
         "correo" => $correo,
         "tipo_usuario" => $tipo
     ];

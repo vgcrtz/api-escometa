@@ -1,11 +1,13 @@
 CREATE DATABASE IF NOT EXISTS escometa;
 USE escometa;
 
-DROP TABLE IF EXISTS Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion;
+DROP TABLE IF EXISTS VerificacionCorreo, Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion;
 
 #Parte correspondiente al usuario
 CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL,
+    nombre_usuario VARCHAR (30) UNIQUE NOT NULL,
     correo VARCHAR(100) UNIQUE NOT NULL,
     contraseña VARCHAR(255) NOT NULL,
     tipo_usuario ENUM('ALUMNO','DOCENTE','ADMINISTRATIVO', 'ADMIN') NOT NULL,

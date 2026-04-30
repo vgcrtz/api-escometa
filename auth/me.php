@@ -45,6 +45,8 @@ echo json_encode([
     "data" => [
         "id_usuario" => $session['id_usuario'],
         "correo" => $session['correo'],
+        "nombre" => $session['nombre'],
+        "nombre_usuario" => $session['nombre_usuario'],
         "tipo_usuario" => $session['tipo_usuario']
     ]
 ]);

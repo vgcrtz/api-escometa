@@ -16,9 +16,9 @@ class Usuario {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create($correo, $passwordHash, $tipo_usuario) {
-        $query = "INSERT INTO " . $this->table . " (correo, contraseña, tipo_usuario)
-                  VALUES (:correo, :password, :tipo_usuario)";
+    public function create($correo, $nombre, $nombre_usuario, $passwordHash, $tipo_usuario) {
+        $query = "INSERT INTO " . $this->table . " (correo, nombre, nombre_usuario, contraseña, tipo_usuario)
+                  VALUES (:correo, :nombre, :nombre_usuario, :password, :tipo_usuario)";
 
         if ($tipo_usuario === 'ADMIN') {
             return false;
@@ -26,6 +26,8 @@ class Usuario {
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":correo", $correo);
+        $stmt->bindParam(":nombre", $nombre);
+        $stmt->bindParam(":nombre_usuario", $nombre_usuario);
         $stmt->bindParam(":password", $passwordHash);
         $stmt->bindParam(":tipo_usuario", $tipo_usuario);
 
@@ -78,6 +80,8 @@ class Usuario {
 
             $id = $this->create(
                 $data['correo'],
+                $data['nombre'],
+                $data['nombre_usuario'],
                 $data['password'],
                 $data['tipo_usuario']
             );
