@@ -1,15 +1,14 @@
 <?php
-require_once '../config/database.php';
-require_once '../models/Usuario.php';
-require_once '../utils/email.php';
-require_once '../models/Verificacion.php';
-
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Content-Type: application/json");
-
 header("Access-Control-Allow-Origin: http://localhost:4200");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -17,13 +16,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_once '../config/database.php';
+require_once '../models/Usuario.php';
+require_once '../utils/email.php';
+require_once '../models/Verificacion.php';
+
+
 $data = json_decode(file_get_contents("php://input"), true);
 
 if (
     !isset($data['correo']) ||
     !isset($data['nombre']) ||
     !isset($data['nombre_usuario']) ||
-    !isset($data['contraseña']) ||
+    !isset($data['contrasena']) ||
     !isset($data['tipo_usuario'])
 ) {
     http_response_code(400);
@@ -34,7 +39,7 @@ if (
 $correo = $data['correo'];
 $nombre = $data['nombre'];
 $nombre_usuario = $data['nombre_usuario'];
-$password = $data['contraseña'];
+$password = $data['contrasena'];
 $tipo = $data['tipo_usuario'];
 
 if ($tipo === 'ADMIN') {
