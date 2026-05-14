@@ -16,4 +16,4 @@ class VerificacionCorreo(Base):
     expiracion: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     usado: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    usuario: Mapped[Usuario] = relationship()
+    usuario: Mapped[Usuario] = relationship(back_populates="verificacion_codigos")

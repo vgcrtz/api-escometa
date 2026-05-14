@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.usuario import Administrativo, Alumno, Docente, TipoUsuario, Usuario
 from app.schemas.auth import RegisterRequest
+from app.services.verification_service import crear_codigo_verificacion
 from app.utils.security import hash_password, verify_password
 
 DOMINIOS_PERMITIDOS = {"ipn.mx", "alumno.ipn.mx", "egresado.ipn.mx"}
@@ -13,7 +14,6 @@ def get_email_domain(correo: str) -> str:
 
 def find_user_by_email(db: Session, correo: str) -> Usuario | None:
     return db.query(Usuario).filter(Usuario.correo == correo).first()
-
 
 def find_user_by_username(db: Session, nombre_usuario: str) -> Usuario | None:
     return db.query(Usuario).filter(Usuario.nombre_usuario == nombre_usuario).first()
@@ -29,7 +29,7 @@ def create_user_with_role(db: Session, payload: RegisterRequest) -> Usuario:
     )
 
     db.add(usuario)
-    db.flush()
+    db.flush()  # obtiene id_usuario sin cerrar la transacción
 
     if payload.tipo_usuario == "ALUMNO":
         db.add(
@@ -57,6 +57,9 @@ def create_user_with_role(db: Session, payload: RegisterRequest) -> Usuario:
             )
         )
 
+    # Genera el primer código de verificación durante el registro.
+    crear_codigo_verificacion(db, usuario.id_usuario)
+
     db.commit()
     db.refresh(usuario)
     return usuario
@@ -65,7 +68,7 @@ def create_user_with_role(db: Session, payload: RegisterRequest) -> Usuario:
 def authenticate_user(db: Session, correo: str, password: str) -> Usuario | None:
     usuario = find_user_by_email(db, correo)
     if not usuario:
-        return None
+          return None
     if not verify_password(password, usuario.contraseña):
         return None
     return usuario

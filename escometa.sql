@@ -150,3 +150,29 @@ CREATE TABLE Notificacion (
                               leida BOOLEAN DEFAULT FALSE,
                               FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
+
+-- drop database escometa;
+
+select * from usuario;
+/*
+DELETE FROM Usuario
+WHERE correo = 'jvegac2001@alumno.ipn.mx';
+*/
+INSERT INTO Usuario (
+    nombre,
+    nombre_usuario,
+    correo,
+    contraseña,
+    tipo_usuario,
+    activo,
+    verificado
+)
+VALUES (
+    'Jose Angel Vega Cortez',
+    'vgcrtz',
+    'jvegac2001@alumno.ipn.mx',
+    '$2b$12$mOLJhZUmKw2rolm8V6WDYOWgwfafA0/U5nr7DuOLTZfpb0K90dENS',
+    'ADMIN',
+    TRUE,
+    TRUE
+);

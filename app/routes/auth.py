@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.middleware.auth import optional_auth
 from app.schemas.auth import LoginRequest, RegisterRequest
+from app.schemas.verification import ResendCodeRequest, VerifyEmailRequest
 from app.services.auth_service import (
     DOMINIOS_PERMITIDOS,
     authenticate_user,
@@ -15,6 +16,13 @@ from app.services.auth_service import (
     find_user_by_email,
     find_user_by_username,
     get_email_domain,
+)
+from app.services.email_service import enviar_codigo_verificacion
+from app.services.verification_service import (
+    buscar_codigo_valido,
+    crear_y_guardar_codigo,
+    marcar_codigo_usado,
+    marcar_usuario_verificado,
 )
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -31,6 +39,7 @@ def build_session_data(usuario) -> dict:
         "nombre": usuario.nombre,
         "nombre_usuario": usuario.nombre_usuario,
         "tipo_usuario": usuario.tipo_usuario.value if hasattr(usuario.tipo_usuario, "value") else usuario.tipo_usuario,
+        "verificado": bool(usuario.verificado),
     }
 
 
@@ -98,12 +107,17 @@ def register(payload: RegisterRequest, response: Response, db: Session = Depends
             detail=f"Error al registrar: {exc}",
         )
 
+    # Envía el último código activo generado durante el registro.
+    codigo_activo = usuario.verificacion_codigos[-1].codigo if usuario.verificacion_codigos else None
+    if codigo_activo:
+        enviar_codigo_verificacion(usuario.correo, codigo_activo)
+
     session_data = build_session_data(usuario)
     set_session_cookie(response, session_data)
 
     return {
         "status": "success",
-        "message": "Usuario registrado correctamente",
+        "message": "Usuario registrado correctamente. Código de verificación enviado.",
         "data": session_data,
     }
 
@@ -122,6 +136,12 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Usuario desactivado",
+        )
+
+    if not usuario.verificado:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cuenta no verificada. Verifica tu correo antes de iniciar sesión",
         )
 
     session_data = build_session_data(usuario)
@@ -182,6 +202,65 @@ def me(session_data: dict | None = Depends(optional_auth)):
             "nombre_usuario": session_data.get("nombre_usuario"),
             "tipo_usuario": session_data.get("tipo_usuario"),
         },
+    }
+
+
+@router.post("/verify-email")
+def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
+    usuario = find_user_by_email(db, str(payload.correo))
+
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    if usuario.verificado:
+        return {
+            "status": "success",
+            "message": "La cuenta ya estaba verificada",
+        }
+
+    registro = buscar_codigo_valido(db, usuario.id_usuario, payload.codigo)
+
+    if not registro:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Código inválido o expirado",
+        )
+
+    marcar_codigo_usado(db, registro)
+    marcar_usuario_verificado(db, usuario)
+    db.commit()
+
+    return {
+        "status": "success",
+        "message": "Cuenta verificada",
+    }
+
+
+@router.post("/resend-code")
+def resend_code(payload: ResendCodeRequest, db: Session = Depends(get_db)):
+    usuario = find_user_by_email(db, str(payload.correo))
+
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    if usuario.verificado:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El usuario ya está verificado",
+        )
+
+    registro = crear_y_guardar_codigo(db, usuario.id_usuario)
+    enviar_codigo_verificacion(usuario.correo, registro.codigo)
+
+    return {
+        "status": "success",
+        "message": "Código reenviado",
     }
 
 

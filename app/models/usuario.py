@@ -31,6 +31,7 @@ class Usuario(Base):
     alumno: Mapped[Optional["Alumno"]] = relationship(back_populates="usuario", cascade="all, delete-orphan")
     docente: Mapped[Optional["Docente"]] = relationship(back_populates="usuario", cascade="all, delete-orphan")
     administrativo: Mapped[Optional["Administrativo"]] = relationship(back_populates="usuario", cascade="all, delete-orphan")
+    verificacion_codigos: Mapped[list["VerificacionCorreo"]] = relationship(back_populates="usuario", cascade="all, delete-orphan")
 
 
 class Alumno(Base):
