@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS escometa;
 USE escometa;
 
-DROP TABLE IF EXISTS VerificacionCorreo, Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion, AnuncioArchivo;
+DROP TABLE IF EXISTS VerificacionCorreo, Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion, AnuncioImagen;
 
 #Parte correspondiente al usuario
 CREATE TABLE Usuario (
@@ -163,26 +163,3 @@ CREATE TABLE Notificacion (
 );
 
 -- drop database escometa;
-
-INSERT INTO Usuario (
-    nombre,
-    nombre_usuario,
-    correo,
-    contraseña,
-    tipo_usuario,
-    activo,
-    verificado
-)
-VALUES (
-    'Jose Angel Vega Cortez',
-    'vgcrtz',
-    'jvegac2001@alumno.ipn.mx',
-    '$2b$12$mOLJhZUmKw2rolm8V6WDYOWgwfafA0/U5nr7DuOLTZfpb0K90dENS',
-    'ADMIN',
-    TRUE,
-    TRUE
-);
-
-ALTER TABLE Usuario
-ADD COLUMN foto_perfil_url VARCHAR(500) NULL;
-select * from usuario;

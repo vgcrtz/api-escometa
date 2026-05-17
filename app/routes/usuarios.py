@@ -7,6 +7,7 @@ from app.middleware.auth import require_admin, require_auth
 from app.schemas.usuario import UsuarioCreate, UsuarioUpdate
 from app.schemas.media import FotoPerfilUpdate
 from app.models.usuario import Usuario
+import HTTPException
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -19,6 +20,7 @@ def _usuario_to_dict(usuario):
         "correo": usuario.correo,
         "nombre": usuario.nombre,
         "nombre_usuario": usuario.nombre_usuario,
+        "foto_perfil_url": usuario.foto_perfil_url,
         "tipo_usuario": tipo,
         "activo": usuario.activo,
         "verificado": usuario.verificado,
