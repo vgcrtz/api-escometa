@@ -6,6 +6,8 @@ import app.models  # noqa: F401 - registra todos los modelos en Base.metadata
 from app.routes.auth import router as auth_router
 from app.routes.usuarios import router as usuarios_router
 from app.routes.academico import router as academico_router
+from app.routes.asistencias import router as asistencias_router
+from app.routes.comunicacion import router as comunicacion_router
 
 app = FastAPI(title="ESCOMETA API")
 
@@ -20,6 +22,8 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(usuarios_router)
 app.include_router(academico_router)
+app.include_router(asistencias_router)
+app.include_router(comunicacion_router)
 
 
 @app.on_event("startup")

@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     MAIL_FROM: str = "no-reply@escometa.local"
     MAIL_FROM_NAME: str = "Sistema ESCOMETA"
 
+    SCHOOL_LATITUDE: float = 19.5048
+    SCHOOL_LONGITUDE: float = -99.1463
+    ATTENDANCE_RADIUS_METERS: float = 150.0
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property

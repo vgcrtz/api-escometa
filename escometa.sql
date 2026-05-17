@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS escometa;
 USE escometa;
 
-DROP TABLE IF EXISTS VerificacionCorreo, Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion;
+DROP TABLE IF EXISTS VerificacionCorreo, Usuario, Alumno, Docente, Administrativo, Materia, GrupoAcademico, Usuario_Grupo, SesionClase, Conversacion, Participante, Mensaje, Anuncio, Anuncio_Usuario, Archivo, Asistencia, Notificacion, AnuncioArchivo;
 
 #Parte correspondiente al usuario
 CREATE TABLE Usuario (
@@ -11,6 +11,7 @@ CREATE TABLE Usuario (
                          correo VARCHAR(100) UNIQUE NOT NULL,
                          contraseña VARCHAR(255) NOT NULL,
                          tipo_usuario ENUM('ALUMNO','DOCENTE','ADMINISTRATIVO', 'ADMIN') NOT NULL,
+                         foto_perfil_url VARCHAR(500) NULL,
                          activo BOOLEAN DEFAULT TRUE,
                          verificado BOOLEAN DEFAULT FALSE,
                          fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -124,6 +125,16 @@ CREATE TABLE Anuncio_Usuario (
                                  FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
+CREATE TABLE AnuncioImagen (
+    id_imagen INT AUTO_INCREMENT PRIMARY KEY,
+    id_anuncio INT NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    path_storage VARCHAR(500),
+    nombre_original VARCHAR(255),
+    fecha_subida DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_anuncio) REFERENCES Anuncio(id_anuncio)
+);
+
 CREATE TABLE Archivo (
                          id_archivo INT AUTO_INCREMENT PRIMARY KEY,
                          id_usuario INT,
@@ -153,11 +164,6 @@ CREATE TABLE Notificacion (
 
 -- drop database escometa;
 
-select * from usuario;
-/*
-DELETE FROM Usuario
-WHERE correo = 'jvegac2001@alumno.ipn.mx';
-*/
 INSERT INTO Usuario (
     nombre,
     nombre_usuario,
@@ -176,3 +182,7 @@ VALUES (
     TRUE,
     TRUE
 );
+
+ALTER TABLE Usuario
+ADD COLUMN foto_perfil_url VARCHAR(500) NULL;
+select * from usuario;

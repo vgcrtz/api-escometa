@@ -14,6 +14,8 @@ class RegisterRequest(BaseModel):
     contrasena: str = Field(alias="contraseña", min_length=6, max_length=255)
     tipo_usuario: TipoRegistro
 
+    foto_perfil_url: str | None = None
+
     # Datos opcionales según rol
     boleta: Optional[str] = None
     carrera: Optional[str] = None
@@ -37,6 +39,7 @@ class AuthSession(BaseModel):
     tipo_usuario: str
     nombre: Optional[str] = None
     nombre_usuario: Optional[str] = None
+    foto_perfil_url: str | None = None
 
 
 class ApiResponse(BaseModel):

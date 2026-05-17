@@ -27,6 +27,7 @@ class Usuario(Base):
     activo: Mapped[bool] = mapped_column(Boolean, default=True)
     verificado: Mapped[bool] = mapped_column(Boolean, default=False)
     fecha_registro: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    foto_perfil_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     alumno: Mapped[Optional["Alumno"]] = relationship(back_populates="usuario", cascade="all, delete-orphan")
     docente: Mapped[Optional["Docente"]] = relationship(back_populates="usuario", cascade="all, delete-orphan")

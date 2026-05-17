@@ -5,6 +5,8 @@ from app.controllers import usuario_controller
 from app.database import get_db
 from app.middleware.auth import require_admin, require_auth
 from app.schemas.usuario import UsuarioCreate, UsuarioUpdate
+from app.schemas.media import FotoPerfilUpdate
+from app.models.usuario import Usuario
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -122,4 +124,31 @@ def destroy(
         "status": "success",
         "message": "Usuario desactivado",
         "data": _usuario_to_dict(usuario),
+    }
+
+@router.put("/me/foto")
+def actualizar_foto_perfil(
+    payload: FotoPerfilUpdate,
+    db: Session = Depends(get_db),
+    session: dict = Depends(require_auth)
+):
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == session["id_usuario"]
+    ).first()
+
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    usuario.foto_perfil_url = str(payload.foto_perfil_url)
+
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "status": "success",
+        "message": "Foto de perfil actualizada",
+        "data": {
+            "id_usuario": usuario.id_usuario,
+            "foto_perfil_url": usuario.foto_perfil_url
+        }
     }

@@ -4,6 +4,7 @@ import secrets
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from app.models.usuario import Usuario
 
 from app.database import get_db
 from app.middleware.auth import optional_auth
@@ -172,7 +173,10 @@ def guest(response: Response):
 
 
 @router.get("/me")
-def me(session_data: dict | None = Depends(optional_auth)):
+def me(
+    session_data: dict | None = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
     if not session_data:
         return {
             "status": "success",
@@ -191,19 +195,30 @@ def me(session_data: dict | None = Depends(optional_auth)):
             },
         }
 
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == session_data.get("id_usuario")
+    ).first()
+
+    if not usuario:
+        return {
+            "status": "success",
+            "authenticated": False,
+            "data": None,
+        }
+
     return {
         "status": "success",
         "authenticated": True,
         "isGuest": False,
         "data": {
-            "id_usuario": session_data.get("id_usuario"),
-            "correo": session_data.get("correo"),
-            "nombre": session_data.get("nombre"),
-            "nombre_usuario": session_data.get("nombre_usuario"),
-            "tipo_usuario": session_data.get("tipo_usuario"),
+            "id_usuario": usuario.id_usuario,
+            "correo": usuario.correo,
+            "nombre": usuario.nombre,
+            "nombre_usuario": usuario.nombre_usuario,
+            "tipo_usuario": usuario.tipo_usuario,
+            "foto_perfil_url": usuario.foto_perfil_url,
         },
     }
-
 
 @router.post("/verify-email")
 def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):

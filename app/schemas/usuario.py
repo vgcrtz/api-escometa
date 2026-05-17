@@ -60,3 +60,4 @@ class UsuarioResponse(BaseModel):
     tipo_usuario: str
     activo: bool
     verificado: bool
+    foto_perfil_url: str
