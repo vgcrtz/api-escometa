@@ -7,11 +7,9 @@ from app.middleware.auth import require_admin, require_auth
 from app.schemas.usuario import UsuarioCreate, UsuarioUpdate
 from app.schemas.media import FotoPerfilUpdate
 from app.models.usuario import Usuario
-import HTTPException
+from fastapi import HTTPException
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
-
-
 def _usuario_to_dict(usuario):
     tipo = usuario.tipo_usuario.value if hasattr(usuario.tipo_usuario, "value") else usuario.tipo_usuario
 

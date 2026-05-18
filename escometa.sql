@@ -24,21 +24,21 @@ CREATE TABLE Alumno (
                         semestre INT,
                         creditos INT,
                         carga INT,
-                        FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                        FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE Docente (
                          id_usuario INT PRIMARY KEY,
                          grado_academico VARCHAR(100),
                          departamento VARCHAR(100),
-                         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE Administrativo (
                                 id_usuario INT PRIMARY KEY,
                                 area VARCHAR(100),
                                 puesto VARCHAR(100),
-                                FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                                FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE VerificacionCorreo (
@@ -47,7 +47,7 @@ CREATE TABLE VerificacionCorreo (
                                     codigo VARCHAR(10) NOT NULL,
                                     expiracion DATETIME NOT NULL,
                                     usado BOOLEAN DEFAULT FALSE,
-                                    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                                    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 #Parte referente a las materias
@@ -61,16 +61,16 @@ CREATE TABLE GrupoAcademico (
                                 id_grupo INT AUTO_INCREMENT PRIMARY KEY,
                                 id_materia INT NOT NULL,
                                 id_docente INT NOT NULL,
-                                FOREIGN KEY (id_materia) REFERENCES Materia(id_materia),
-                                FOREIGN KEY (id_docente) REFERENCES Usuario(id_usuario)
+                                FOREIGN KEY (id_materia) REFERENCES Materia(id_materia) ON DELETE CASCADE,
+                                FOREIGN KEY (id_docente) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE Usuario_Grupo (
                                id_usuario INT,
                                id_grupo INT,
                                PRIMARY KEY (id_usuario, id_grupo),
-                               FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
-                               FOREIGN KEY (id_grupo) REFERENCES GrupoAcademico(id_grupo)
+                               FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+                               FOREIGN KEY (id_grupo) REFERENCES GrupoAcademico(id_grupo) ON DELETE CASCADE
 );
 
 CREATE TABLE SesionClase (
@@ -80,7 +80,7 @@ CREATE TABLE SesionClase (
                              hora_inicio TIME NOT NULL,
                              hora_fin TIME NOT NULL,
                              aula VARCHAR(50),
-                             FOREIGN KEY (id_grupo) REFERENCES GrupoAcademico(id_grupo)
+                             FOREIGN KEY (id_grupo) REFERENCES GrupoAcademico(id_grupo) ON DELETE CASCADE
 );
 
 #Parte correspondiente al chatsito
@@ -93,8 +93,8 @@ CREATE TABLE Participante (
                               id_usuario INT,
                               id_conversacion INT,
                               PRIMARY KEY (id_usuario, id_conversacion),
-                              FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
-                              FOREIGN KEY (id_conversacion) REFERENCES Conversacion(id_conversacion)
+                              FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+                              FOREIGN KEY (id_conversacion) REFERENCES Conversacion(id_conversacion) ON DELETE CASCADE
 );
 
 CREATE TABLE Mensaje (
@@ -103,8 +103,8 @@ CREATE TABLE Mensaje (
                          fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
                          id_usuario INT NOT NULL,
                          id_conversacion INT NOT NULL,
-                         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
-                         FOREIGN KEY (id_conversacion) REFERENCES Conversacion(id_conversacion)
+                         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+                         FOREIGN KEY (id_conversacion) REFERENCES Conversacion(id_conversacion) ON DELETE CASCADE
 );
 
 #Parte correspondiente al anuncio
@@ -114,15 +114,15 @@ CREATE TABLE Anuncio (
                          contenido TEXT NOT NULL,
                          fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
                          id_emisor INT NOT NULL,
-                         FOREIGN KEY (id_emisor) REFERENCES Usuario(id_usuario)
+                         FOREIGN KEY (id_emisor) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE Anuncio_Usuario (
                                  id_anuncio INT,
                                  id_usuario INT,
                                  PRIMARY KEY (id_anuncio, id_usuario),
-                                 FOREIGN KEY (id_anuncio) REFERENCES Anuncio(id_anuncio),
-                                 FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                                 FOREIGN KEY (id_anuncio) REFERENCES Anuncio(id_anuncio) ON DELETE CASCADE,
+                                 FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE AnuncioImagen (
@@ -132,7 +132,7 @@ CREATE TABLE AnuncioImagen (
     path_storage VARCHAR(500),
     nombre_original VARCHAR(255),
     fecha_subida DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_anuncio) REFERENCES Anuncio(id_anuncio)
+    FOREIGN KEY (id_anuncio) REFERENCES Anuncio(id_anuncio) ON DELETE CASCADE
 );
 
 CREATE TABLE Archivo (
@@ -141,7 +141,7 @@ CREATE TABLE Archivo (
                          nombre VARCHAR(100),
                          tipo VARCHAR(50),
                          acceso VARCHAR(50),
-                         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                         FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE Asistencia (
@@ -150,7 +150,7 @@ CREATE TABLE Asistencia (
                             fecha DATE,
                             hora TIME,
                             coordenadas VARCHAR(100),
-                            FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                            FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 CREATE TABLE Notificacion (
@@ -159,7 +159,7 @@ CREATE TABLE Notificacion (
                               contenido TEXT,
                               fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
                               leida BOOLEAN DEFAULT FALSE,
-                              FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+                              FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
 -- drop database escometa;

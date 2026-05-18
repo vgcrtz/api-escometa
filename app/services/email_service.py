@@ -7,7 +7,6 @@ from app.config import settings
 class EmailNotConfiguredError(RuntimeError):
     pass
 
-
 def enviar_codigo_verificacion(correo: str, codigo: str) -> None:
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
         print(f"[DEV] Código de verificación para {correo}: {codigo}")

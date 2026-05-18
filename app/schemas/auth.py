@@ -4,7 +4,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 TipoRegistro = Literal["ALUMNO", "DOCENTE", "ADMINISTRATIVO"]
 
-
 class RegisterRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 

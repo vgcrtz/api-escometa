@@ -1,7 +1,7 @@
 import json
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Cookie
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.models.usuario import Usuario
@@ -32,7 +32,6 @@ COOKIE_NAME = "session"
 COOKIE_MAX_AGE = 60 * 60 * 24
 GUEST_COOKIE_MAX_AGE = 60 * 60
 
-
 def build_session_data(usuario) -> dict:
     return {
         "id_usuario": usuario.id_usuario,
@@ -42,7 +41,6 @@ def build_session_data(usuario) -> dict:
         "tipo_usuario": usuario.tipo_usuario.value if hasattr(usuario.tipo_usuario, "value") else usuario.tipo_usuario,
         "verificado": bool(usuario.verificado),
     }
-
 
 def set_session_cookie(response: Response, session_data: dict, max_age: int = COOKIE_MAX_AGE) -> None:
     response.set_cookie(
@@ -146,7 +144,7 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
         )
 
     session_data = build_session_data(usuario)
-    set_session_cookie(response, session_data)
+    set_session_cookie(response, session_data, COOKIE_MAX_AGE)
 
     return {
         "status": "success",
@@ -163,7 +161,7 @@ def guest(response: Response):
         "tipo_usuario": "INVITADO",
     }
 
-    set_session_cookie(response, session_data, max_age=GUEST_COOKIE_MAX_AGE)
+    set_session_cookie(response, session_data, GUEST_COOKIE_MAX_AGE)
 
     return {
         "status": "success",
