@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     SCHOOL_LONGITUDE: float = -99.1463
     ATTENDANCE_RADIUS_METERS: float = 150.0
 
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-5.5"
+    CHATBOT_ENABLE_WEB_SEARCH: bool = True
+    CHATBOT_MAX_ANNOUNCEMENTS: int = 8
+    CHATBOT_ALLOWED_WEB_DOMAINS: str = "ipn.mx,escom.ipn.mx,www.ipn.mx"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property
