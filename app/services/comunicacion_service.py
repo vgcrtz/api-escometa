@@ -138,3 +138,109 @@ def marcar_todas_leidas(db: Session, id_usuario: int) -> int:
     )
     db.commit()
     return int(actualizadas)
+
+# Agrega estas funciones a app/services/comunicacion_service.py
+# Requiere que hayas ejecutado la migracion SQL y que Anuncio tenga los campos:
+# titulo, categoria, prioridad, fijado, activo, visible_desde, visible_hasta.
+#
+# Si tu tabla Alumno tiene otro nombre, ajusta solamente _get_user_target_profile.
+
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from app.models.comunicacion import Anuncio
+
+
+def _get_user_target_profile(db: Session, id_usuario: int) -> dict:
+    row = db.execute(
+        text(
+            """
+            SELECT
+                u.id_usuario,
+                u.tipo_usuario,
+                a.carrera,
+                a.semestre
+            FROM Usuario u
+            LEFT JOIN Alumno a ON a.id_usuario = u.id_usuario
+            WHERE u.id_usuario = :id_usuario
+            """
+        ),
+        {"id_usuario": id_usuario},
+    ).mappings().first()
+
+    if not row:
+        return {
+            "id_usuario": id_usuario,
+            "tipo_usuario": None,
+            "carrera": None,
+            "semestre": None,
+        }
+
+    return dict(row)
+
+
+def list_important_news(db: Session, id_usuario: int, limit: int = 10):
+    profile = _get_user_target_profile(db, id_usuario)
+
+    rows = db.execute(
+        text(
+            """
+            SELECT a.id_anuncio
+            FROM Anuncio a
+            WHERE
+                COALESCE(a.activo, 1) = 1
+                AND (a.visible_desde IS NULL OR a.visible_desde <= NOW())
+                AND (a.visible_hasta IS NULL OR a.visible_hasta >= NOW())
+                AND (
+                    EXISTS (
+                        SELECT 1
+                        FROM Anuncio_Usuario au
+                        WHERE au.id_anuncio = a.id_anuncio
+                          AND au.id_usuario = :id_usuario
+                    )
+                    OR EXISTS (
+                        SELECT 1
+                        FROM Anuncio_Target atg
+                        WHERE atg.id_anuncio = a.id_anuncio
+                          AND (atg.tipo_usuario IS NULL OR atg.tipo_usuario = :tipo_usuario)
+                          AND (atg.carrera IS NULL OR atg.carrera = :carrera)
+                          AND (atg.semestre IS NULL OR atg.semestre = :semestre)
+                    )
+                )
+            ORDER BY
+                CASE
+                    WHEN a.prioridad = 'URGENTE' THEN 1
+                    WHEN a.prioridad = 'ALTA' THEN 2
+                    WHEN a.fijado = 1 THEN 3
+                    WHEN a.prioridad = 'NORMAL' THEN 4
+                    ELSE 5
+                END ASC,
+                a.fecha DESC
+            LIMIT :limit
+            """
+        ),
+        {
+            "id_usuario": id_usuario,
+            "tipo_usuario": profile.get("tipo_usuario"),
+            "carrera": profile.get("carrera"),
+            "semestre": profile.get("semestre"),
+            "limit": limit,
+        },
+    ).mappings().all()
+
+    ids = [row["id_anuncio"] for row in rows]
+
+    if not ids:
+        return []
+
+    announcements = db.query(Anuncio).filter(Anuncio.id_anuncio.in_(ids)).all()
+    announcement_by_id = {
+        announcement.id_anuncio: announcement
+        for announcement in announcements
+    }
+
+    return [
+        announcement_by_id[id_anuncio]
+        for id_anuncio in ids
+        if id_anuncio in announcement_by_id
+    ]

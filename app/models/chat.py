@@ -124,7 +124,7 @@ class ChatMensajeAdjunto(Base):
     path_storage = Column(String(255), nullable=True)
     nombre_original = Column(String(255), nullable=True)
     tipo_mime = Column(String(100), nullable=True)
-    tamaño_bytes = Column(BigInteger, nullable=True)
+    tamano_bytes = Column(BigInteger, nullable=True)
     fecha_subida = Column(DateTime, nullable=False, server_default=func.now())
 
     mensaje = relationship("ChatMensaje", back_populates="adjuntos")

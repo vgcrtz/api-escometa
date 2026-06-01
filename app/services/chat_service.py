@@ -297,7 +297,7 @@ class ChatService:
                         path_storage=adjunto.path_storage,
                         nombre_original=adjunto.nombre_original,
                         tipo_mime=adjunto.tipo_mime,
-                        tamaño_bytes=adjunto.tamaño_bytes,
+                        tamano_bytes=adjunto.tamano_bytes,
                     )
                 )
 
@@ -516,7 +516,7 @@ class ChatService:
                     "path_storage": adjunto.path_storage,
                     "nombre_original": adjunto.nombre_original,
                     "tipo_mime": adjunto.tipo_mime,
-                    "tamaño_bytes": adjunto.tamaño_bytes,
+                    "tamano_bytes": adjunto.tamano_bytes,
                 }
                 for adjunto in adjuntos
             ],

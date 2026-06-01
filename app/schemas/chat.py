@@ -37,7 +37,7 @@ class MensajeAdjuntoCreate(BaseModel):
     path_storage: Optional[str] = None
     nombre_original: Optional[str] = None
     tipo_mime: Optional[str] = None
-    tamaño_bytes: Optional[int] = None
+    tamano_bytes: Optional[int] = None
 
 
 class MensajeCreate(BaseModel):

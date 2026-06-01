@@ -10,6 +10,7 @@ from app.routes.asistencias import router as asistencias_router
 from app.routes.comunicacion import router as comunicacion_router
 from app.routes.chatbot import router as chatbot_router
 from app.routes.chat import router as chat_router
+from app.routes.forum import router as forum_router
 
 app = FastAPI(title="ESCOMETA API")
 
@@ -28,6 +29,7 @@ app.include_router(asistencias_router)
 app.include_router(comunicacion_router)
 app.include_router(chat_router)
 app.include_router(chatbot_router)
+app.include_router(forum_router)
 
 
 @app.on_event("startup")
