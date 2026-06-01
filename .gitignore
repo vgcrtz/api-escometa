@@ -2,3 +2,6 @@
 .env
 
 *.pyc
+*.xml
+*.pyc
+*.pyc
